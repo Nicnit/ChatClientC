@@ -7,13 +7,13 @@
 #define PORT 8080
 
 //  This heavily follows the tutorial on https://www.geeksforgeeks.org/c/socket-programming-cc/
-//  It is meant for brushing up on C. Also for practicing neovim.
+//  It is meant for brushing up on C. Also for practicing neovim
 
 
-int main(int argc, char const *argv[])
+int main(int argc, char const* argv[])
 {
 
-	int server_file_desc, new_socket;
+	int server_fd, new_socket;
 	ssize_t valread;
 
 	struct sockaddr_in address;;
@@ -23,16 +23,16 @@ int main(int argc, char const *argv[])
 	
 	socklen_t addrlen = sizeof(address);
 	char buffer[1024] = { 0 };
-	char *hello = "hello world from this neovim written server.c";
+	char *hello = "\nhello world from this neovim written server.c\n";
 
 	// Create socket file descriptor
-	if (server_fd = socket(AF_INET, SOCK_STREAM, 0) < 0) {
+	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		perror("socket failed");
 		exit(EXIT_FAILURE);
 	}
 
 	// Force the socket to the port PORT
-	if (setsockopt(server_fdm SOL_SOCKET,
+	if (setsockopt(server_fd, SOL_SOCKET,
 			SO_REUSEADDR | SO_REUSEPORT, &opt,
 			sizeof(opt))) {
 		perror("setsockoptfail");
@@ -54,18 +54,18 @@ int main(int argc, char const *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if (new_socket = accept(server_fd, (struct sockaddr*)&address, &addrlen)) {
-		perror("accept");
+	if ((new_socket = accept(server_fd, (struct sockaddr*)&address, &addrlen)) < 0) {
+		perror("accept failure");
 		exit(EXIT_FAILURE);	
 	}
 
-
+	printf("\n reached point 1 in server.c \n");
 
 	//subtracitng 1 for the null terminator at the end, which isn't included
 	valread = read(new_socket, buffer, 1024-1);
-	printf("%s\n", buffer);
-	send(new_socket, hello, strlen(hello, 0);
-	printf("Hello message sent\n");
+	printf("\n %s \n", buffer);
+	send(new_socket, hello, strlen(hello), 0);
+	printf("\nHello message from server sent\n");
 
 	close(new_socket);
 	close(server_fd);
@@ -90,7 +90,7 @@ char* NewlineString(char str[])
     int oldSize = strlen(str);
     char *newString = malloc (oldSize + 1 + 1); // newline and null terminator are each 1 character
     
-    strcpy(newString, str);
+    strncpy(newString, str, strlen(str));
 
     newString[oldSize + 1] = '\0';
     newString[oldSize] = '\n';
